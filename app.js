@@ -7,22 +7,20 @@ const passport =require('passport')
 
 const apiRouter = require("./src/routes/api")
 
-
+ 
 mongoose.set("strictQuery",false)
 const mongoDB = process.env.SESSION_SERVER
 mongoose.connect(mongoDB)
 const db = mongoose.connection
 db.on("error", console.error.bind(console, 'mongo connection error'))
 
-app.set('views', __dirname)
-app.set('view engine','ejs')
-app.use(express.urlencoded({extended:false}))
-
-app.use(passport.initialize())
-app.use(passport.session())
-
+app.use(express.json()) 
+app.use(express.urlencoded({extended:true}))
+ 
+ 
+ 
 app.use('/api', apiRouter)
-
+   
 
 app.listen(3000, () => console.log('Listening on port 3000'))
 

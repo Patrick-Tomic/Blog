@@ -68,4 +68,16 @@ try{
 }
 }
 
-exports.logout
+exports.logout = (req,res,next) => {
+    console.log('logged out')
+}
+
+exports.user = async(req,res,next) => {
+    const user = await User.find({},'username, password').exec()
+    if(!user){
+        res.status(403).json({message:'no'})
+    } else{
+        res.status(200).json(user)
+    }
+}
+  
