@@ -73,7 +73,7 @@ exports.logout = (req,res,next) => {
 }
 
 exports.user = async(req,res,next) => {
-    const user = await User.find({},'username, password').exec()
+    const user = await User.findOne({username:'lightwicked'}).exec()
     if(!user){
         res.status(403).json({message:'no'})
     } else{
