@@ -57,7 +57,7 @@ try{
             //Create token
             const body = {_id:user._id, username:user.username, admin:user.admin}
             const token = jwt.sign({user:body}, process.env.SECRET, {expiresIn:'1d'})
-            return res.status(200).json({body, token})
+            return res.status(200).json({body, toke_n})
 
         })
     })(req,res,next)
