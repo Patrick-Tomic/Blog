@@ -13,4 +13,4 @@ module.exports = router
 
 router.get('/user',userController.user)  
 
-router.get('/posts',postController.posts)
+router.get('/posts',postController.posts) 

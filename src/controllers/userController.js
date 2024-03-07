@@ -6,43 +6,41 @@ const {body, validationResult} = require('express-validator')
 const User = require('../models/userModel')
 exports.signup = [
     body('username').trim().escape(),
-    body('password').trim()
-    .isLength(6).withMessage('Minimum length of 6'),
-    body('confirm-password').custom((value,{req}) => {
+    body('password').trim() 
+    .isLength(6).withMessage('Minimum length of 6').escape(),
+     body('confirmPassword').custom(async(value,{req}) => {
         if(value != req.body.password) {
-            throw new Error('confirmation password does not match')
+            throw new Error(`${req.body.password} does not match ${value}`)
         }
-    }),
+    }).escape(),  
     async (req,res,next) => {
         const errors = validationResult(req)
-        const attempt = User.findOne({username:req.body.username})
-        if(attempt || !errors.isEmpty()){
+        const attempt = await User.findOne({username:req.body.username})
+        if(attempt != undefined || !errors.isEmpty()){
             return res.status(403).json({
                 username:req.body.username,
                 errors:errors.array(),
-                message:'username taken'
+                message:`username taken`
             })
-        }
-        const hash = bcrypt.hash(13, req.body.password)
+        } 
+         
+        const hash =await  bcrypt.hash(req.body.password, 13)
+     
         const user = new User({
             username:req.body.username,
             password:hash,
             admin:false
         })
-        user.save( err => {
-            if(err){
-                return next(err)
-            }
-        })
-        res.status(200).json({
+        user.save() 
+        return res.status(200).json({
             message:'User created successfully'
         })
-        (req,res,next)
+        
     }
 ]
 
 exports.login = async(req,res,next) =>{
-try{
+try{ 
     passport.authenticate('local', {session:false}, (err,user,info) =>{
         if(err || !user){
             const error = new Error("User does not exist")
