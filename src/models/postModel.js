@@ -8,4 +8,4 @@ const postSchema = new Schema({
     timestamp: Date
 })
 
-module.exports = mongoose.model('Post', postSchema)
+module.exports = mongoose.model('Post', postSchema) 

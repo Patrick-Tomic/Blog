@@ -37,7 +37,7 @@ exports.signup = [
         })
         
     }
-]
+] 
 
 exports.login = async(req,res,next) =>{
 try{ 
@@ -45,7 +45,8 @@ try{
         if(err || !user){
             const error = new Error("User does not exist")
             return res.status(403).json({
-                info
+                info,
+                message:'No go chief'
             })
         }
         req.login(user, {session:false}, (err) => {
@@ -55,12 +56,13 @@ try{
             //Create token
             const body = {_id:user._id, username:user.username, admin:user.admin}
             const token = jwt.sign({user:body}, process.env.SECRET, {expiresIn:'1d'})
-            return res.status(200).json({body, toke_n})
+            return res.status(200).json({body, token})
 
         })
     })(req,res,next)
 }catch(err){ 
     res.status(403).json({
+       
         err
     })
 }
@@ -78,4 +80,4 @@ exports.user = async(req,res,next) => {
         res.status(200).json(user)
     }
 }
-  
+ 

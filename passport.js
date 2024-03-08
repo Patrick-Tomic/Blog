@@ -1,5 +1,5 @@
 const passport = require('passport')
-const localStrategy = require('passport-local').Strategy
+const LocalStrategy = require('passport-local').Strategy
 const bcrypt = require('bcryptjs')
 const User = require('../models/userModel')
 const passportJWT = require('passport-jwt')
@@ -7,20 +7,27 @@ const JWTstrategy = passportJWT.Strategy
 const ExtractJWT = passportJWT.ExtractJwt
 
 
-passport.use("local", new localStrategy(async(username, password, done) => {
-    const user = await User.findOne({username:username})
-    if(!user){
-       return done(null, false, {message:"Incorrect Username"}) 
-    }
-    const match = await bcrypt.compare(password, user.password)
-    if(!match){
-        return done(null, false, {message:"Incorrect Password"})
-    }
-    return done(null, user, {message:"Logged in!"})
+passport.use(new LocalStrategy((username, password, done) => {
+    User.findOne({username:username}, (err, user) => {
+        if(err){
+            return done(err)
+        }
+        if(!user){
+            return done(null, false, {message:"Incorrect Username"}) 
+         }
+         bcrypt.compare(password, user.password, (err,res) => {
+            if(res) {
+                return done(null, user)
+            } else{
+                return done(null,false,{message:"Incorrect Password"})
+            }
+         })
+    })
+   
 }))
 
 passport.use(
-    new JWTstrategy(
+    new JWTstrategy( 
         {
             secretOrKey:process.env.SECRET,
             jwtFromRequest:ExtractJWT.fromAuthHeaderAsBearerToken(),
