@@ -1,12 +1,15 @@
+
+require('dotenv').config()
+const config = require('./passport.js')
 const express = require("express")
 const app = express()
 const bcrypt = require('bcryptjs')
-require('dotenv').config()
+
 const mongoose = require("mongoose")
 const passport =require('passport') 
 const cors = require('cors')
-const apiRouter = require("./src/routes/api")
-
+const apiRouter = require("./routes/api")
+   
 app.use(cors()) 
 mongoose.set("strictQuery",false)
 const mongoDB = process.env.SESSION_SERVER

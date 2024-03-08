@@ -1,44 +1,36 @@
 const passport = require('passport')
 const LocalStrategy = require('passport-local').Strategy
 const bcrypt = require('bcryptjs')
-const User = require('../models/userModel')
+const User = require('./models/userModel')
 const passportJWT = require('passport-jwt')
 const JWTstrategy = passportJWT.Strategy
 const ExtractJWT = passportJWT.ExtractJwt
 
 
-passport.use(new LocalStrategy((username, password, done) => {
-    User.findOne({username:username}, (err, user) => {
-        if(err){
-            return done(err)
-        }
-        if(!user){
-            return done(null, false, {message:"Incorrect Username"}) 
-         }
-         bcrypt.compare(password, user.password, (err,res) => {
-            if(res) {
-                return done(null, user)
-            } else{
-                return done(null,false,{message:"Incorrect Password"})
-            }
-         })
-    })
-   
+passport.use(new LocalStrategy(async(username, password,done) =>{
+    const user = await User.findOne({username:username})
+    if(!user){
+        return done(null,false, {message:"Incorrect Username"})
+    }
+    const match = await bcrypt.compare(password, user.password)
+    if(!match){
+        return done(null,false, {message:"incorrect password"})
+    }
+    return done(null,user,{message:'Logged in!'})
 }))
 
 passport.use(
-    new JWTstrategy( 
-        {
-            secretOrKey:process.env.SECRET,
-            jwtFromRequest:ExtractJWT.fromAuthHeaderAsBearerToken(),
-        },
-        async(token, done) => {
-            try{
-                return done(null, token.user)
-            }catch(err){
-                done(err)
-            }
+    new JWTstrategy({
+        jwtFromRequest: ExtractJWT.fromAuthHeaderAsBearerToken(),
+        secretOrKey: process.env.SECRET,
+    }, 
+    async (token, done) => {
+        try{
+            console.log(token)
+            return done(null, token.user)
+        }catch(err){
+            return done(err)
         }
-    )
+    })
 )
  

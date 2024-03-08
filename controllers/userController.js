@@ -4,6 +4,7 @@ const passport = require('passport')
 const bcrypt = require('bcryptjs')
 const {body, validationResult} = require('express-validator') 
 const User = require('../models/userModel')
+ 
 exports.signup = [
     body('username').trim().escape(),
     body('password').trim() 
@@ -45,8 +46,8 @@ try{
         if(err || !user){
             const error = new Error("User does not exist")
             return res.status(403).json({
-                info,
-                message:'No go chief'
+                info
+                
             })
         }
         req.login(user, {session:false}, (err) => {
@@ -62,8 +63,7 @@ try{
     })(req,res,next)
 }catch(err){ 
     res.status(403).json({
-       
-        err
+        err:'nope'
     })
 }
 }
